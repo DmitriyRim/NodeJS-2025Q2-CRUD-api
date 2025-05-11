@@ -3,3 +3,11 @@ export const isValidUuid = (userId: string): boolean => {
     userId,
   );
 };
+
+export const parseRequestBody = (str: string) => {
+  try {
+    return JSON.parse(str)
+  } catch {
+    return {}
+  }
+}
