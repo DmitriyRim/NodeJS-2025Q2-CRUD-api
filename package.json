@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "cross-env NODE_ENV=development ts-node-dev --respawn src/index.ts",
-    "start:build": "webpack",
+    "start:prod": "webpack && node ./dist/bundle.js",
     "lint": "eslint 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.{ts,json}'"
   },
