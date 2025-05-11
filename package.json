@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/DmitriyRim/NodeJS-2025Q2-CRUD-api#readme",
   "dependencies": {
+    "@types/node": "^22.15.17",
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "ts-node-dev": "^2.0.0",
