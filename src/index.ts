@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { HttpStatusCode, Method, ResponseData } from './types/types';
 import { getAllUsers, getUserById } from './modules/get';
 import { isValidUuid } from './utils/utils';
+import { addNewUser } from './modules/post';
 
 const port = Number(process.env.PORT) || 8000;
 const baseApiUrl = '/api/users';
@@ -13,34 +14,44 @@ const server = createServer((req, res) => {
     statusCode: 404,
     body: JSON.stringify({
       error: 'Not Found',
-    })
-  }
+    }),
+  };
+  let body = '';
 
-  if (url === baseApiUrl || url?.startsWith(baseApiUrl + '/')) {
-    const id = url.split('/')[3];
+  req.on('data', (chunk) => {
+    body += chunk;
+  });
 
-    if(id && !isValidUuid(id)){
-      responseData = {
-        statusCode: HttpStatusCode.InvalidUuid,
-        body: JSON.stringify({ error: 'Invalid uuid' })
+  req.on('end', () => {
+    if (url === baseApiUrl || url?.startsWith(baseApiUrl + '/')) {
+      const id = url.split('/')[3];
+
+      if (id && !isValidUuid(id)) {
+        responseData = {
+          statusCode: HttpStatusCode.InvalidUuid,
+          body: JSON.stringify({ error: 'Invalid uuid' }),
+        };
+      } else {
+        switch (method) {
+          case Method.GET:
+            responseData = id ? getUserById(id) : getAllUsers();
+            break;
+          case Method.POST:
+            responseData = addNewUser(JSON.parse(body));
+            break;
+          default:
+            break;
+        }
       }
+
+      res.writeHead(responseData.statusCode, { 'Content-Type': 'text/json' });
+      res.end(responseData.body);
     } else {
-      switch (method) {
-        case Method.GET:
-          responseData = id ? getUserById(id) : getAllUsers();
-          break;
-
-        default:
-          break;
-      }
+      res.writeHead(404, { 'Content-Type': 'text/json' });
+      res.end(JSON.stringify({ error: 'Not Found' }));
     }
-
-    res.writeHead(responseData.statusCode, { 'Content-Type': 'text/json' });
-    res.end(responseData.body);
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/json' });
-    res.end(JSON.stringify({ error: 'Not Found' }));
-  }
+    res.end();
+  });
 });
 
 server.listen(port, '127.0.0.1', () => {
