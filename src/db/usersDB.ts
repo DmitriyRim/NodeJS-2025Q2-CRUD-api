@@ -1,3 +1,3 @@
-export const usersDB = {
-    
-}
+import { User } from "../types/types";
+
+export const usersDB: User[] = [];
