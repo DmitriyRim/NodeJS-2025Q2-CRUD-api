@@ -5,6 +5,7 @@ import { getAllUsers, getUserById } from './modules/get';
 import { isValidUuid } from './utils/utils';
 import { addNewUser } from './modules/post';
 import { updateUser } from './modules/put';
+import { deleteUser } from './modules/delete';
 
 const port = Number(process.env.PORT) || 8000;
 const baseApiUrl = '/api/users';
@@ -27,10 +28,20 @@ const server = createServer((req, res) => {
     if (url === baseApiUrl || url?.startsWith(baseApiUrl + '/')) {
       const id = url.split('/')[3];
 
-      if (id && !isValidUuid(id)) {
+      if (
+        (
+          method === Method.PUT ||
+          method === Method.DELETE) &&
+        !id
+      ) {
         responseData = {
           statusCode: HttpStatusCode.InvalidUuid,
-          body: JSON.stringify({ error: 'Invalid uuid' }),
+          body: JSON.stringify({ error: 'Missing user ID in request URL' }),
+        };
+      } else if (id && !isValidUuid(id)) {
+        responseData = {
+          statusCode: HttpStatusCode.InvalidUuid,
+          body: JSON.stringify({ error: `Invalid UUID format` }),
         };
       } else {
         switch (method) {
@@ -42,6 +53,9 @@ const server = createServer((req, res) => {
             break;
           case Method.PUT:
             responseData = updateUser(JSON.parse(body), id);
+            break;
+          case Method.DELETE:
+            responseData = deleteUser(id);
             break;
           default:
             break;
