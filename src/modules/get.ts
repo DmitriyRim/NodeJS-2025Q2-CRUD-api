@@ -14,6 +14,6 @@ export const getUserById = (id: string): ResponseData => {
 
     return {
         statusCode: user ? HttpStatusCode.OK : HttpStatusCode.NotFound,
-        body: JSON.stringify(usersDB),
+        body: JSON.stringify(body),
     };
 };

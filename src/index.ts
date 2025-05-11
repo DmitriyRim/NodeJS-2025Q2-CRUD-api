@@ -4,6 +4,7 @@ import { HttpStatusCode, Method, ResponseData } from './types/types';
 import { getAllUsers, getUserById } from './modules/get';
 import { isValidUuid } from './utils/utils';
 import { addNewUser } from './modules/post';
+import { updateUser } from './modules/put';
 
 const port = Number(process.env.PORT) || 8000;
 const baseApiUrl = '/api/users';
@@ -38,6 +39,9 @@ const server = createServer((req, res) => {
             break;
           case Method.POST:
             responseData = addNewUser(JSON.parse(body));
+            break;
+          case Method.PUT:
+            responseData = updateUser(JSON.parse(body), id);
             break;
           default:
             break;
